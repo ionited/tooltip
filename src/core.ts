@@ -64,14 +64,30 @@ export class TooltipCore {
 
     this.el.removeEventListener('blur', this.hideFunc);
     document.removeEventListener('scroll', this.updateFunc, true);
+    window.removeEventListener('orientationchange', this.updateFunc);
 
     if (this.isTouch()) {
+      document.removeEventListener('click', this.hideFunc);
+
       this.el.removeEventListener('contextmenu', this.showFuncPrevent);
     } else {
       this.el.removeEventListener('focus', this.showFunc);
       this.el.removeEventListener('mouseover', this.showFunc);
       this.el.removeEventListener('mouseout', this.hideFunc);
     }
+  }
+
+  private getContent() {
+    let title = this.el.getAttribute('title');
+
+    if (this.options.contentAttr === 'data-title' && title) {
+      this.el.setAttribute('data-title', title);
+      this.el.removeAttribute('title');
+    } else {
+      title = this.el.getAttribute(this.options.contentAttr as string);
+    }
+
+    return title;
   }
 
   private getPosition() {
@@ -95,26 +111,29 @@ export class TooltipCore {
   hide() {
     if (!this.tooltip || document.activeElement === this.el) return;
 
-    const tooltip = this.tooltip;
+    let tooltip: HTMLDivElement | null = this.tooltip;
 
     this.tooltip = null;
     
     tooltip.classList.remove('active');
-    tooltip.ontransitionend = () => tooltip.remove();
+    tooltip.ontransitionend = () => {
+      tooltip?.remove();
+      tooltip = null;
+    };
+
+    setTimeout(() => {
+      if (tooltip) tooltip.remove();
+    }, 125);
   }
 
   private init() {
-    const title = this.el.getAttribute('title');
-
-    if (this.options.contentAttr === 'data-title' && title) {
-      this.el.setAttribute('data-title', title);
-      this.el.removeAttribute('title');
-    }
-
-    this.el.addEventListener('blur', this.hideFunc);
+    this.el.addEventListener('blur', this.hideFunc, true);
     document.addEventListener('scroll', this.updateFunc, true);
+    window.addEventListener('orientationchange', this.updateFunc);
 
     if (this.isTouch()) {
+      document.addEventListener('click', this.hideFunc);
+
       this.el.addEventListener('contextmenu', this.showFuncPrevent);
     } else {
       this.el.addEventListener('focus', this.showFunc);
@@ -130,7 +149,7 @@ export class TooltipCore {
 
     const
       tooltip = document.createElement('div'),
-      content = this.options.content ?? this.el.getAttribute(this.options.contentAttr as string) as string
+      content = this.options.content ?? this.getContent() as string
     ;
 
     tooltip.className = 'io-tooltip';
