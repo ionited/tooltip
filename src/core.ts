@@ -8,6 +8,12 @@ export class TooltipCore {
   options: TooltipOptions;
   tooltip: HTMLDivElement | null = null;
 
+  private blurFunc = () => {
+    this.activeElement = null;
+
+    this.hide();
+  };
+  private focusFunc = this.focus.bind(this);
   private hideFunc = this.hide.bind(this);
   private showFunc = this.show.bind(this);
   private showFuncPrevent = (e: Event) => {
@@ -16,6 +22,7 @@ export class TooltipCore {
     this.show();
   };
   private updateFunc = this.update.bind(this);
+  private activeElement: Element | null = null;
 
   constructor(el: HTMLElement, options?: TooltipOptions) {
     this.el = el;
@@ -62,7 +69,7 @@ export class TooltipCore {
       this.el.removeAttribute('data-title');
     }
 
-    this.el.removeEventListener('blur', this.hideFunc);
+    this.el.removeEventListener('blur', this.blurFunc);
     document.removeEventListener('scroll', this.updateFunc, true);
     window.removeEventListener('orientationchange', this.updateFunc);
 
@@ -74,7 +81,13 @@ export class TooltipCore {
       this.el.removeEventListener('focus', this.showFunc);
       this.el.removeEventListener('mouseover', this.showFunc);
       this.el.removeEventListener('mouseout', this.hideFunc);
+
+      document.removeEventListener('keydown', this.focusFunc);
     }
+  }
+
+  private focus(e: KeyboardEvent) {
+    if (e.key === 'Tab') setTimeout(() => this.activeElement = document.activeElement);
   }
 
   private getContent() {
@@ -109,7 +122,7 @@ export class TooltipCore {
   }
 
   hide() {
-    if (!this.tooltip || document.activeElement === this.el) return;
+    if (!this.tooltip || this.activeElement === this.el) return;
 
     let tooltip: HTMLDivElement | null = this.tooltip;
 
@@ -127,7 +140,7 @@ export class TooltipCore {
   }
 
   private init() {
-    this.el.addEventListener('blur', this.hideFunc, true);
+    this.el.addEventListener('blur', this.blurFunc, true);
     document.addEventListener('scroll', this.updateFunc, true);
     window.addEventListener('orientationchange', this.updateFunc);
 
@@ -139,10 +152,12 @@ export class TooltipCore {
       this.el.addEventListener('focus', this.showFunc);
       this.el.addEventListener('mouseover', this.showFunc);
       this.el.addEventListener('mouseout', this.hideFunc);
+
+      document.addEventListener('keydown', this.focusFunc);
     }
   }
 
-  private isTouch = () => 'ontouchstart' in window || navigator.msMaxTouchPoints;
+  private isTouch = () => 'ontouchstart' in window || (navigator as any).msMaxTouchPoints;
 
   show() {
     if (this.tooltip) return;
