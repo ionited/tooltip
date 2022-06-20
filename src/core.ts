@@ -96,9 +96,7 @@ export class TooltipCore {
     if (this.options.contentAttr === 'data-title' && title) {
       this.el.setAttribute('data-title', title);
       this.el.removeAttribute('title');
-    } else {
-      title = this.el.getAttribute(this.options.contentAttr as string);
-    }
+    } else title = this.el.getAttribute(this.options.contentAttr as string);
 
     return title;
   }
@@ -106,13 +104,12 @@ export class TooltipCore {
   private getPosition() {
     const 
       elRect = this.el.getBoundingClientRect(),
-      tooltipRect = (this.tooltip as HTMLDivElement).getBoundingClientRect()
-    ;
+      tooltipRect = (this.tooltip as HTMLDivElement).getBoundingClientRect();
 
     let position = {
       x: elRect.left + elRect.width / 2 - tooltipRect.width / 2,
       y: elRect.top > window.innerHeight / 2 ? elRect.top - tooltipRect.height - 8 : elRect.top + elRect.height + 8
-    };
+    }
 
     if (position.x < 0 && elRect.left <= window.innerWidth / 2) position.x = elRect.left;
 
@@ -132,7 +129,7 @@ export class TooltipCore {
     tooltip.ontransitionend = () => {
       tooltip?.remove();
       tooltip = null;
-    };
+    }
 
     setTimeout(() => {
       if (tooltip) tooltip.remove();
@@ -164,8 +161,7 @@ export class TooltipCore {
 
     const
       tooltip = document.createElement('div'),
-      content = this.options.content ?? this.getContent() as string
-    ;
+      content = this.options.content ?? this.getContent() as string;
 
     tooltip.className = 'io-tooltip';
     tooltip.innerHTML = content;
