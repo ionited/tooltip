@@ -8,13 +8,13 @@ export class TooltipCore {
   options: TooltipOptions;
   tooltip: HTMLDivElement | null = null;
 
-  private blurFunc = () => {
+  private blurFunc = (e: Event) => {
     this.activeElement = null;
 
-    this.hide();
+    this.hide(e);
   };
   private focusFunc = this.focus.bind(this);
-  private hideFunc = this.hide.bind(this);
+  private hideFunc = (e: Event) => this.hide(e);
   private showFunc = this.show.bind(this);
   private showFuncPrevent = (e: Event) => {
     e.preventDefault();
@@ -118,8 +118,8 @@ export class TooltipCore {
     return position;
   }
 
-  hide() {
-    if (!this.tooltip || this.activeElement === this.el) return;
+  hide(e: Event) {
+    if (!this.tooltip || this.activeElement === this.el || ((e as MouseEvent).relatedTarget && this.el.contains((e as MouseEvent).relatedTarget as Node))) return;
 
     let tooltip: HTMLDivElement | null = this.tooltip;
 
