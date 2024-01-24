@@ -36,6 +36,7 @@ Tooltip(el: HTMLElement, options?: TooltipOptions): TooltipCore
 interface TooltipOptions {
   content?: string;
   contentAttr: string = 'title';
+  showOnClick: boolean = false;
 }
 
 interface TooltipCore {

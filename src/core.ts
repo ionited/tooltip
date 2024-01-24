@@ -1,6 +1,7 @@
 export interface TooltipOptions {
   content?: string;
   contentAttr?: string;
+  showOnClick: boolean;
 }
 
 export class TooltipCore {
@@ -15,11 +16,16 @@ export class TooltipCore {
   };
   private focusFunc = this.focus.bind(this);
   private hideFunc = (e: Event) => this.hide(e);
-  private showFunc = this.show.bind(this);
+  private mouseoutFunc = (e: Event) => {
+    if (e.target !== document.activeElement) this.activeElement = null;
+
+    this.hide(e);
+  };
+  private showFunc = (e: Event) => this.show(e);
   private showFuncPrevent = (e: Event) => {
     e.preventDefault();
 
-    this.show();
+    this.show(e);
   };
   private updateFunc = this.update.bind(this);
   private activeElement: Element | null = null;
@@ -27,7 +33,8 @@ export class TooltipCore {
   constructor(el: HTMLElement, options?: TooltipOptions) {
     this.el = el;
     this.options = Object.assign({
-      contentAttr: 'data-title'
+      contentAttr: 'data-title',
+      showOnClick: false
     }, options);
 
     this.init();
@@ -80,7 +87,9 @@ export class TooltipCore {
     } else {
       this.el.removeEventListener('focus', this.showFunc);
       this.el.removeEventListener('mouseover', this.showFunc);
-      this.el.removeEventListener('mouseout', this.hideFunc);
+      this.el.removeEventListener('mouseout', this.mouseoutFunc);
+
+      if (this.options.showOnClick) this.el.removeEventListener('click', this.showFunc);
 
       document.removeEventListener('keydown', this.focusFunc);
     }
@@ -148,7 +157,9 @@ export class TooltipCore {
     } else {
       this.el.addEventListener('focus', this.showFunc);
       this.el.addEventListener('mouseover', this.showFunc);
-      this.el.addEventListener('mouseout', this.hideFunc);
+      this.el.addEventListener('mouseout', this.mouseoutFunc);
+
+      if (this.options.showOnClick) this.el.addEventListener('click', this.showFunc);
 
       document.addEventListener('keydown', this.focusFunc);
     }
@@ -156,7 +167,7 @@ export class TooltipCore {
 
   private isTouch = () => 'ontouchstart' in window || (navigator as any).msMaxTouchPoints;
 
-  show() {
+  show(e: Event) {
     if (this.tooltip) return;
 
     const
@@ -168,6 +179,7 @@ export class TooltipCore {
 
     document.body.appendChild(tooltip);
 
+    this.activeElement = e.target as Element;
     this.tooltip = tooltip;
 
     this.update(); 
