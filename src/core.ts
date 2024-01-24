@@ -159,10 +159,10 @@ export class TooltipCore {
       this.el.addEventListener('mouseover', this.showFunc);
       this.el.addEventListener('mouseout', this.mouseoutFunc);
 
-      if (this.options.showOnClick) this.el.addEventListener('click', this.showFunc);
-
       document.addEventListener('keydown', this.focusFunc);
     }
+
+    if (this.options.showOnClick) this.el.addEventListener('click', this.showFunc);
   }
 
   private isTouch = () => 'ontouchstart' in window || (navigator as any).msMaxTouchPoints;
