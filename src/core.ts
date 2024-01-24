@@ -89,10 +89,10 @@ export class TooltipCore {
       this.el.removeEventListener('mouseover', this.showFunc);
       this.el.removeEventListener('mouseout', this.mouseoutFunc);
 
-      if (this.options.showOnClick) this.el.removeEventListener('click', this.showFunc);
-
       document.removeEventListener('keydown', this.focusFunc);
     }
+
+    if (this.options.showOnClick) this.el.removeEventListener('click', this.showFunc);
   }
 
   private focus(e: KeyboardEvent) {
@@ -128,7 +128,7 @@ export class TooltipCore {
   }
 
   hide(e: Event) {
-    if (!this.tooltip || this.activeElement === this.el || ((e as MouseEvent).relatedTarget && this.el.contains((e as MouseEvent).relatedTarget as Node))) return;
+    if (!this.tooltip || this.activeElement === this.el || this.el.contains(this.activeElement) || ((e as MouseEvent).relatedTarget && this.el.contains((e as MouseEvent).relatedTarget as Node))) return;
 
     let tooltip: HTMLDivElement | null = this.tooltip;
 
