@@ -1,6 +1,6 @@
 {
   "name": "@ionited/tooltip",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "A simple and lightweight tooltip library",
   "main": "./dist/tooltip.esm.js",
   "module": "./dist/tooltip.esm.js",
