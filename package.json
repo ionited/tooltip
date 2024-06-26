@@ -2,8 +2,9 @@
   "name": "@ionited/tooltip",
   "version": "0.1.7",
   "description": "A simple and lightweight tooltip library",
-  "main": "./dist/tooltip.js",
+  "main": "./dist/tooltip.esm.js",
   "module": "./dist/tooltip.esm.js",
+  "browser": "./dist/tooltip.js",
   "types": "./dist/tooltip.d.ts",
   "scripts": {
     "start": "rollup -c -w",
@@ -30,6 +31,6 @@
   "devDependencies": {
     "rollup-plugin-terser": "^7.0.2",
     "rollup-plugin-typescript2": "^0.36.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.5.2"
   }
 }
